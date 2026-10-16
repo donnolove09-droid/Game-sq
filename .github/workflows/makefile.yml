@@ -1,27 +1,12 @@
-name: Makefile CI
+ARCHS = arm64
+TARGET = iphone:clang:latest:14.0
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+include $(THEOS)/makefiles/common.mk
 
-jobs:
-  build:
+TWEAK_NAME = L99Avatar
 
-    runs-on: ubuntu-latest
+L99Avatar_FILES = Tweak.x
+L99Avatar_CFLAGS = -fobjc-arc
+L99Avatar_FRAMEWORKS = UIKit Foundation
 
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: configure
-      run: ./configure
-
-    - name: Install dependencies
-      run: make
-
-    - name: Run check
-      run: make check
-
-    - name: Run distcheck
-      run: make distcheck
+include $(THEOS_MAKE_PATH)/tweak.mk
