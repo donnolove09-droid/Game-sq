@@ -1,0 +1,9 @@
+Package: com.l99.avatar
+Name: L99 Avatar
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Thay nút 99 thành avatar
+Maintainer: You
+Author: You
+Section: Tweaks
