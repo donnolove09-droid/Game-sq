@@ -8,10 +8,10 @@ static void FindAndReplace99(UIView *view) {
     if (!view || gDidReplace) return;
 
     for (UIView *sub in view.subviews) {
-        // Nhận diện nút 99: bo góc + có border
+        // Nhận diện nút 99
         if (sub.layer.cornerRadius >= 8.0 && sub.layer.borderWidth >= 1.0) {
             
-            // Xóa hết nội dung cũ (số 99)
+            // Xóa nội dung cũ
             for (UIView *child in [sub.subviews copy]) {
                 [child removeFromSuperview];
             }
@@ -32,7 +32,7 @@ static void FindAndReplace99(UIView *view) {
                 gAvatarView.userInteractionEnabled = YES;
                 gAvatarView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-                // Tải ảnh từ URL
+                // Load ảnh
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:kAvatarURL]];
                     if (data) {
@@ -46,7 +46,12 @@ static void FindAndReplace99(UIView *view) {
 
             gAvatarView.frame = sub.bounds;
             [sub addSubview:gAvatarView];
-            
+
+            // === QUAN TRỌNG: Giữ hành vi bấm mở menu ===
+            // Chuyển touch từ avatar về nút gốc
+            gAvatarView.userInteractionEnabled = NO;   // để touch đi xuyên xuống nút gốc
+            sub.userInteractionEnabled = YES;
+
             gDidReplace = YES;
             return;
         }
@@ -60,7 +65,6 @@ static void FindAndReplace99(UIView *view) {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     BOOL result = %orig;
     
-    // Đợi game load xong rồi mới thay
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         for (UIWindow *window in [UIApplication sharedApplication].windows) {
             FindAndReplace99(window);
@@ -73,8 +77,7 @@ static void FindAndReplace99(UIView *view) {
 %end
 
 %ctor {
-    // Backup: chạy thêm lần nữa sau 5 giây phòng trường hợp app load chậm
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (!gDidReplace) {
             for (UIWindow *window in [UIApplication sharedApplication].windows) {
                 FindAndReplace99(window);
